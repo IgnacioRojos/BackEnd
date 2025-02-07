@@ -11,7 +11,7 @@ const crearCart = (req, res) =>{
 
 
 const getCartId= (req, res) =>{
-    const cart = cartManager.getCartId(req.params.cid);
+    const cart = cartManager.getCartById(req.params.cid);
 
     if(cart){
         res.json(cart);

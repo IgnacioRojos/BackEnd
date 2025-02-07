@@ -5,12 +5,12 @@ const productManager = new ProductManager();
 
 
 const getAllProductos = (req, res) =>{
-    const products = productManager.getAllProductos();
+    const products = productManager.getAllProducts();
     res.json(products);
 };
 
 const GetProductosById = (req ,res) =>{
-    const product = productManager.GetProductosById(req.params.pid);
+    const product = productManager.getProductById(req.params.pid);
 
     if (product){
         res.json(product);
@@ -21,9 +21,9 @@ const GetProductosById = (req ,res) =>{
 };
 
 
-const AñadirProducto = (res, req) =>{
+const añadirProducto = (req, res) =>{
     const newProduct = req.body;
-    const addProduct = productManager.AñadirProducto(newProduct);
+    const addProduct = productManager.añadirProduct(newProduct);
     res.status(201).json(addProduct);
 };
 
@@ -45,7 +45,7 @@ const EliminarProducto = (req, res) =>{
     
     const productId = req.params.pid;
     
-    const eliminar = productManager.EliminarProducto(productId);
+    const eliminar = productManager.eliminarProduct(productId);
 
     if (eliminar){
         res.status(204).send();
@@ -61,7 +61,7 @@ const EliminarProducto = (req, res) =>{
 module.export = {
     getAllProductos,
     GetProductosById,
-    AñadirProducto,
+    añadirProducto,
     ActualizarProducto,
     EliminarProducto,
         
