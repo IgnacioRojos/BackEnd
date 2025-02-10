@@ -1,12 +1,10 @@
-
-
 const ProductManager = require('../managers/ProductManager.js');
 
 const productManager = new ProductManager();
 
 const getAllProducts = async (req, res) => {
   try {
-    const products = await productManager.getProducts();
+    const products = await productManager.getAllProducts();
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching products' });
@@ -50,7 +48,7 @@ const deleteProduct = async (req, res) => {
 
 
 
-// Aquí seguirían los demás métodos...
+
 
 module.exports = {
   getAllProducts,
