@@ -21,7 +21,7 @@ class CartManager {
 
     async createCart() {
         const carts = await this.getAllCarts();
-        const newCart = { id: carts.length + 1, products: [] };
+        const newCart = { id: carts.length ? carts[carts.length - 1].id + 1 : 1, products: [] };
         carts.push(newCart);
         await fs.writeFile(cartsFile, JSON.stringify(carts, null, 2)); // Guardar los cambios
         return newCart;

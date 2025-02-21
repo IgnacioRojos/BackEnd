@@ -13,6 +13,7 @@ router.get('/:pid', ProductController.getProductById);
 // Crear un nuevo producto
 router.post('/', ProductController.addProduct);
 
+
 // Actualizar un producto
 router.put('/:pid', ProductController.updateProduct);
 
