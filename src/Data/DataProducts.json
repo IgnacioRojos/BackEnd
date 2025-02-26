@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "id": 4,
+    "title": "mercado",
+    "description": "libre voy a ser empleado",
+    "price": 1600,
+    "stock": 50
+  },
+  {
+    "id": 5,
+    "title": "mercado",
+    "description": "libre voy a ser empleado",
+    "price": 1600,
+    "stock": 50
+  },
+  {
+    "id": 6,
+    "title": "mercado",
+    "description": "libre voy a ser empleado",
+    "price": 1600,
+    "stock": 50
+  },
+  {
+    "id": 7,
+    "title": "Laptop",
+    "description": "Laptop gaming de alta gama",
+    "price": 1500,
+    "stock": 10
+  },
+  {
+    "id": 1,
+    "title": "remera",
+    "description": "remera de feria",
+    "price": 15,
+    "stock": 555
+  }
+]

@@ -2,7 +2,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 // Obtener la ruta del archivo carts.json
-const cartsFile = path.join(__dirname, '../models/carts.json');
+const cartsFile = path.join(__dirname, '../data/DataCart.json');
 
 class CartManager {
     async getAllCarts() {

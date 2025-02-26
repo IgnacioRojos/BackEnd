@@ -20,8 +20,8 @@ const getAllProducts = async (req, res) => {
 };
 
 const getProductById = async (req, res) => {
-    const { pid } = req.params;
-    const product = await productManager.getProductById(parseInt(pid));
+    const { id } = req.query;
+    const product = await productManager.getProductById(parseInt(id));
     if (product) {
         res.json(product);
     } else {
@@ -30,19 +30,36 @@ const getProductById = async (req, res) => {
 };
 
 const addProduct = async (req, res) => {
+    
     try {
+        const product = req.body; // Recibir el producto del body
+        const newProduct = await productManager.addProduct(product); // Llamar a ProductManager
+    
+        res.status(201).json({ message: "Producto agregado", product: newProduct });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+    
+    
+
+
+
+
+
+
+    /*try {
         const product = req.body;
         const newProduct = await productManager.addProduct(product);
         res.status(201).json(newProduct);
     } catch (error) {
         res.status(400).json({ message: error.message });
-    }
+    }*/
 };
 
 const updateProduct = async (req, res) => {
-    const { pid } = req.params;
+    const { id } = req.query;
     const updateData = req.body;
-    const updatedProduct = await productManager.updateProduct(parseInt(pid), updateData);
+    const updatedProduct = await productManager.updateProduct(parseInt(id), updateData);
     if (updatedProduct) {
         res.json(updatedProduct);
     } else {
@@ -51,8 +68,8 @@ const updateProduct = async (req, res) => {
 };
 
 const deleteProduct = async (req, res) => {
-    const { pid } = req.params;
-    const products = await productManager.deleteProduct(parseInt(pid));
+    const { id } = req.query;
+    const products = await productManager.deleteProduct(parseInt(id));
     if (products) {
         res.json(products);
     } else {
