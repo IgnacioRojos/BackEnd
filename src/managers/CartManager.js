@@ -1,5 +1,6 @@
 const fs = require('fs').promises; 
 const path = require('path');
+const ProductManager = require('../managers/ProductManager');
 
 // Obtener la ruta del archivo carts.json
 const cartsFile = path.join(__dirname, '../data/DataCart.json');
@@ -14,9 +15,9 @@ class CartManager {
         }
     }
 
-    async getCartById(cid) {
+    async getCartById(id) {
         const carts = await this.getAllCarts();
-        return carts.find(cart => cart.id === cid); // Buscar el carrito por id
+        return carts.find(cart => cart.id === parseInt(id)); // Buscar el carrito por id
     }
 
     async createCart() {
@@ -27,23 +28,72 @@ class CartManager {
         return newCart;
     }
 
-    async addProductToCart(cid, pid) {
-        const carts = await this.getAllCarts();
-        const cart = carts.find(cart => cart.id === cid);
+    async addProductToCart(cartId, productId) {
+        try {
+            console.log(`Agregando producto ${productId} al carrito ${cartId}`);
+    
+            const carts = await this.getAllCarts();
+            console.log('Carritos cargados:', carts);
+    
+            const cartIndex = carts.findIndex(cart => cart.id === parseInt(cartId));
+            if (cartIndex === -1) {
+                console.log(`❌ Carrito con ID ${cartId} no encontrado`);
+                return { error: `Carrito con ID ${cartId} no encontrado` };
+            }
+    
+            const cart = carts[cartIndex];
+    
+            // Crear una instancia de ProductManager
+            const productManager = new ProductManager();
+    
+            // Obtener los productos usando la instancia
+            const products = await productManager.getAllProducts();
+            console.log('Productos cargados:', products);
+    
+            const productExists = products.some(product => product.id === parseInt(productId));
+            if (!productExists) {
+                console.log(`❌ Producto con ID ${productId} no existe`);
+                return { error: `Producto con ID ${productId} no existe` };
+            }
+    
+            // Buscar si el producto ya está en el carrito
+            const productIndex = cart.products.findIndex(p => p.product === parseInt(productId));
+            if (productIndex === -1) {
+                cart.products.push({ product: parseInt(productId), quantity: 1 });
+            } else {
+                cart.products[productIndex].quantity += 1;
+            }
+    
+            // Guardar cambios en JSON
+            await fs.writeFile(cartsFile, JSON.stringify(carts, null, 2));
+    
+            console.log(`✅ Producto ${productId} agregado correctamente al carrito ${cartId}`);
+            return { message: `Producto ${productId} agregado al carrito ${cartId}`, cart };
+        } catch (error) {
+            console.error('❌ Error al agregar producto al carrito:', error);
+            return { error: 'Error interno del servidor', details: error.message };
+        }
+    }
+    
+        
+        
+        
+        /*const carts = await this.getAllCarts();
+        const cart = carts.find(cart => cart.id === parseInt(id));
 
         if (!cart) return null;
 
-        const productIndex = cart.products.findIndex(product => product.product === pid);
+        const productIndex = cart.products.findIndex(product => product.product === parseInt(pid));
 
         if (productIndex === -1) {
-            cart.products.push({ product: pid, quantity: 1 });
+            cart.products.push({ product: parseInt(pid), quantity: 1 });
         } else {
             cart.products[productIndex].quantity += 1;
         }
 
         await fs.writeFile(cartsFile, JSON.stringify(carts, null, 2)); // Guardar los cambios
         return cart;
-    }
+    }*/
 }
 
 

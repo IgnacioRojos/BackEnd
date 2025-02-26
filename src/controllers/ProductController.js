@@ -57,14 +57,40 @@ const addProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-    const { id } = req.query;
+    try {
+        const { id } = req.query;
+        if (!id) {
+            return res.status(400).json({ message: "Missing product ID in query params" });
+        }
+
+        const updateData = req.body;
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({ message: "No update data provided" });
+        }
+
+        const updatedProduct = await productManager.updateProduct(parseInt(id), updateData);
+
+        if (updatedProduct) {
+            res.json({ message: "Product updated successfully", product: updatedProduct });
+        } else {
+            res.status(404).json({ message: "Product not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+    
+    
+    
+    
+    
+    /*const { id } = req.query;
     const updateData = req.body;
     const updatedProduct = await productManager.updateProduct(parseInt(id), updateData);
     if (updatedProduct) {
         res.json(updatedProduct);
     } else {
         res.status(404).json({ message: "Product not found" });
-    }
+    }*/
 };
 
 const deleteProduct = async (req, res) => {

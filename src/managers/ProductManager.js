@@ -50,8 +50,15 @@ class ProductManager {
     }
 
     async getAllProducts() {
-        return this.products;
+        try {
+            const data = await fs.readFile(productsFile, 'utf-8');
+            return JSON.parse(data);
+        } catch (error) {
+            console.error('Error al leer productos:', error);
+            return [];
+            }
     }
+    
 
     async getProductById(id) {
         return this.products.find(product => product.id === parseInt(id)) || null;

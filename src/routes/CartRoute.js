@@ -6,12 +6,12 @@ const CartController = require('../controllers/CartController');
 
 
 // Crear un carrito
-router.post('/', CartController.createCart);
+router.post('/create', CartController.createCart);
 
 // Obtener los productos de un carrito específico
 router.get('/:cid', CartController.getCartProducts);
 
 // Agregar un producto al carrito
-router.post('/:cid/product/:pid', CartController.addProductToCart);
+router.post('/agregar/product/:cid/:pid', CartController.addProductToCart);
 
 module.exports = router; 

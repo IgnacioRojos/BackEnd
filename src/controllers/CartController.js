@@ -34,7 +34,7 @@ const addProductToCart = async (req, res) => {
       return res.status(404).json({ message: 'Carrito no encontrado' });
     }
 
-    const updatedCart = await cartManager.addProductToCart(cid, pid);
+    const updatedCart = await cartManager.addProductToCart(parseInt(cid), parseInt(pid));
     res.json(updatedCart);
   } catch (error) {
     res.status(500).json({ message: 'Error al agregar el producto al carrito', error });
