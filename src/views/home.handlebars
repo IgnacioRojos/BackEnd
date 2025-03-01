@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+</head>
+<body>
+    <h1>Lista de productos</h1>
+    <ul id="productList">
+        {{#each products}}
+            <li>{{this.title}} - ${{this.price}} ({{this.stock}} disponibles)</li>
+        {{else}}
+            <li>No hay productos disponibles.</li>
+        {{/each}}
+    </ul>
+    <a href="/productTiempoReal">Ver productos en tiempo real</a>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('productListUpdate', (updatedProducts) => {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';  // Limpiar la lista antes de actualizarla
+
+            updatedProducts.forEach(product => {
+                const li = document.createElement('li');
+                li.innerHTML = `${product.title} - $${product.price} (${product.stock} disponibles)`;
+                productList.appendChild(li);
+            });
+        });
+        // Cargar los productos desde el servidor
+        /*function loadProducts() {
+            fetch('/api/products')  // Llamar a la ruta para obtener todos los productos
+                .then(response => response.json())
+                .then(products => {
+                    const productList = document.getElementById('productList');
+                    productList.innerHTML = '';  // Limpiar la lista antes de actualizarla
+
+                    if (products.length > 0) {
+                        products.forEach(product => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `${product.title} - $${product.price} (${product.stock} disponibles)`;
+                            productList.appendChild(li);
+                        });
+                    } else {
+                        const li = document.createElement('li');
+                        li.innerHTML = 'No hay productos disponibles.';
+                        productList.appendChild(li);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar productos:', error);
+                });
+        }
+
+        // Llamar a la función para cargar los productos al cargar la página
+        loadProducts();*/
+    </script>
+</body>
+</html>

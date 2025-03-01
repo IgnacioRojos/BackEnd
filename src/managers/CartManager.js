@@ -37,7 +37,7 @@ class CartManager {
     
             const cartIndex = carts.findIndex(cart => cart.id === parseInt(cartId));
             if (cartIndex === -1) {
-                console.log(`❌ Carrito con ID ${cartId} no encontrado`);
+                
                 return { error: `Carrito con ID ${cartId} no encontrado` };
             }
     
@@ -52,7 +52,7 @@ class CartManager {
     
             const productExists = products.some(product => product.id === parseInt(productId));
             if (!productExists) {
-                console.log(`❌ Producto con ID ${productId} no existe`);
+                
                 return { error: `Producto con ID ${productId} no existe` };
             }
     
@@ -67,35 +67,16 @@ class CartManager {
             // Guardar cambios en JSON
             await fs.writeFile(cartsFile, JSON.stringify(carts, null, 2));
     
-            console.log(`✅ Producto ${productId} agregado correctamente al carrito ${cartId}`);
+          
             return { message: `Producto ${productId} agregado al carrito ${cartId}`, cart };
         } catch (error) {
-            console.error('❌ Error al agregar producto al carrito:', error);
+          
             return { error: 'Error interno del servidor', details: error.message };
         }
     }
     
-        
-        
-        
-        /*const carts = await this.getAllCarts();
-        const cart = carts.find(cart => cart.id === parseInt(id));
 
-        if (!cart) return null;
-
-        const productIndex = cart.products.findIndex(product => product.product === parseInt(pid));
-
-        if (productIndex === -1) {
-            cart.products.push({ product: parseInt(pid), quantity: 1 });
-        } else {
-            cart.products[productIndex].quantity += 1;
-        }
-
-        await fs.writeFile(cartsFile, JSON.stringify(carts, null, 2)); // Guardar los cambios
-        return cart;
-    }*/
 }
-
 
 module.exports = CartManager;
 

@@ -11,12 +11,18 @@ const initializeProductManager = async () => {
 initializeProductManager(); // Llamar a la inicialización antes de procesar rutas
 
 const getAllProducts = async (req, res) => {
+ 
     try {
         const products = await productManager.getAllProducts();
-        res.json(products);
+        res.render('productTiempoReal', { products: products });  // Aquí pasas el array de productos como parte de un objeto con la clave 'products'
     } catch (error) {
+        console.error('Error al obtener productos:', error);
         res.status(500).json({ message: 'Error fetching products' });
     }
+    
+    
+    
+    
 };
 
 const getProductById = async (req, res) => {
@@ -34,26 +40,15 @@ const addProduct = async (req, res) => {
     try {
         const product = req.body; // Recibir el producto del body
         const newProduct = await productManager.addProduct(product); // Llamar a ProductManager
+
+        // Emitir evento de WebSocket para actualizar la lista en tiempo real
+        io.emit('productListUpdate', await productManager.getAllProducts());
     
         res.status(201).json({ message: "Producto agregado", product: newProduct });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-    
-    
-
-
-
-
-
-
-    /*try {
-        const product = req.body;
-        const newProduct = await productManager.addProduct(product);
-        res.status(201).json(newProduct);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }*/
+  
 };
 
 const updateProduct = async (req, res) => {
@@ -78,28 +73,20 @@ const updateProduct = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
-    
-    
-    
-    
-    
-    /*const { id } = req.query;
-    const updateData = req.body;
-    const updatedProduct = await productManager.updateProduct(parseInt(id), updateData);
-    if (updatedProduct) {
-        res.json(updatedProduct);
-    } else {
-        res.status(404).json({ message: "Product not found" });
-    }*/
+
 };
 
 const deleteProduct = async (req, res) => {
-    const { id } = req.query;
-    const products = await productManager.deleteProduct(parseInt(id));
-    if (products) {
-        res.json(products);
-    } else {
-        res.status(404).json({ message: "Product not found" });
+    try {
+        const { id } = req.query;
+        const updatedProducts = await productManager.deleteProduct(parseInt(id));
+
+        // Emitir evento de WebSocket para actualizar la lista en tiempo real
+        io.emit('productListUpdate', updatedProducts);
+
+        res.json(updatedProducts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -132,63 +119,3 @@ module.exports = {
 
 
 
-/*const ProductManager = require('../managers/ProductManager.js');
-
-const productManager = new ProductManager();
-
-const getAllProducts = async (req, res) => {
-  try {
-    const products = await productManager.getAllProducts();
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching products' });
-  }
-};
-
-const getProductById = async (req, res) => {
-    const { pid } = req.params;
-    const product = await productManager.getProductById(parseInt(pid));
-    if (product) {
-        res.json(product);
-    } else {
-        res.status(404).json({ message: "Product not found" });
-    }
-};
-
-const addProduct = async (req, res) => {
-    const product = req.body;
-    const newProduct = await productManager.addProduct(product);
-    res.status(201).json(newProduct);
-};
-
-const updateProduct = async (req, res) => {
-    const { pid } = req.params;
-    const updateData = req.body;
-    const updatedProduct = await productManager.updateProduct(parseInt(pid), updateData);
-    if (updatedProduct) {
-        res.json(updatedProduct);
-    } else {
-        res.status(404).json({ message: "Product not found" });
-    }
-};
-
-const deleteProduct = async (req, res) => {
-    const { pid } = req.params;
-    const products = await productManager.deleteProduct(parseInt(pid));
-    res.json(products);
-};
-
-
-
-
-
-
-
-module.exports = {
-  getAllProducts,
-  getProductById,
-  addProduct,
-  updateProduct,
-  deleteProduct
-};
-*/

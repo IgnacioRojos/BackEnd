@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos en Tiempo Real</title>
+</head>
+<body>
+    <h1>Productos en Tiempo Real</h1>
+
+    <form id="addProductForm">
+        <input type="text" id="title" placeholder="Título" required>
+        <input type="text" id="description" placeholder="Descripción" required>
+        <input type="number" id="price" placeholder="Precio" required>
+        <input type="number" id="stock" placeholder="Stock" required>
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    <ul id="productList">
+        {{#each products}}
+            <li id="product-{{this.id}}">
+                {{this.title}} - ${{this.price}} ({{this.stock}} disponibles)
+                <button onclick="deleteProduct({{this.id}})">Eliminar</button>
+            </li>
+        {{else}}
+            <li>No hay productos disponibles.</li>
+        {{/each}}
+    </ul>
+        <script src="/socket.io/socket.io.js"></script>
+    <script>
+    const socket = io();
+
+        socket.on('productListUpdate', (updatedProducts) => {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';  // Limpiar la lista antes de actualizarla
+
+            updatedProducts.forEach(product => {
+                const li = document.createElement('li');
+                li.id = `product-${product.id}`;
+                li.innerHTML = `
+                    ${product.title} - $${product.price} (${product.stock} disponibles)
+                    <button onclick="deleteProduct(${product.id})">Eliminar</button>
+                `;
+                productList.appendChild(li);
+            });
+        });
+
+        document.getElementById('addProductForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const price = document.getElementById('price').value;
+            const stock = document.getElementById('stock').value;
+
+            socket.emit('addProduct', { title, description, price, stock });
+            e.target.reset();
+        });
+
+        function deleteProduct(productId) {
+            socket.emit('deleteProduct', productId);
+        }
+    </script>
+    
+</body>
+</html>

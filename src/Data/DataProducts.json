@@ -1,37 +1,65 @@
 [
   {
+    "id": 1,
+    "title": "remera de los piojos",
+    "description": "cosquin rock",
+    "price": "2500",
+    "stock": "150"
+  },
+  {
+    "id": 3,
+    "title": "kilo",
+    "description": " manzana",
+    "price": "5200",
+    "stock": "6020"
+  },
+  {
     "id": 4,
-    "title": "mercado",
-    "description": "libre voy a ser empleado",
-    "price": 1600,
-    "stock": 50
+    "title": "kiksoajgfpg",
+    "description": "gdasgadfas",
+    "price": "1678897",
+    "stock": "25"
   },
   {
     "id": 5,
-    "title": "mercado",
-    "description": "libre voy a ser empleado",
-    "price": 1600,
-    "stock": 50
-  },
-  {
-    "id": 6,
-    "title": "mercado",
-    "description": "libre voy a ser empleado",
-    "price": 1600,
-    "stock": 50
+    "title": "pantalon",
+    "description": "pantalon largo",
+    "price": "89000",
+    "stock": "560"
   },
   {
     "id": 7,
-    "title": "Laptop",
-    "description": "Laptop gaming de alta gama",
-    "price": 1500,
-    "stock": 10
+    "title": "jugo ",
+    "description": "citric",
+    "price": "5600",
+    "stock": "1"
   },
   {
-    "id": 1,
-    "title": "remera",
-    "description": "remera de feria",
-    "price": 15,
-    "stock": 555
+    "id": 8,
+    "title": "agua",
+    "description": "mineral",
+    "price": "5806",
+    "stock": "25"
+  },
+  {
+    "id": 9,
+    "title": "celular",
+    "description": "samsung",
+    "price": "1500000",
+    "stock": "2"
+  },
+  {
+    "id": 10,
+    "title": "televisor",
+    "description": "lg",
+    "price": "189845987",
+    "stock": "1"
+  },
+  {
+    "id": 11,
+    "title": "sflhakfjhoasfi",
+    "description": "sfafasfasf",
+    "price": "12564964",
+    "stock": "56"
   }
 ]

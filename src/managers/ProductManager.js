@@ -5,16 +5,6 @@ const path = require('path');
 const productsFile = path.join(__dirname, '../data/DataProducts.json');
 
 
-/*class Product {
-    constructor(title, description, price, stock,id) {
-        this.id = id.Date.now();; // Se asignará en ProductManager
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.stock = stock;
-    }
-}*/
-
 
 class ProductManager {
 
@@ -23,15 +13,15 @@ class ProductManager {
     }
     constructor() {
         
-        this.productsDir = path.join(__dirname, '../data'); // Definir el directorio aquí
-        this.productsFile = path.join(this.productsDir, 'DataProducts.json'); // Archivo JSON
+        this.productsDir = path.join(__dirname, '../data'); 
+        this.productsFile = path.join(this.productsDir, 'DataProducts.json'); 
         this.products = [];
         this.init();
     }
 
     async init() {
         try {
-            // Verifica si la carpeta `models` existe, si no, la crea
+            
             await fs.mkdir(this.productsDir, { recursive: true });
 
             // Verifica si el archivo JSON existe
@@ -76,9 +66,9 @@ class ProductManager {
 
         let newId = this.products.length > 0 ? Math.max(...this.products.map(p => p.id)) + 1 : 1;
 
-        // Asegurar que el ID no esté en uso (por si hay datos inconsistentes)
+        
         while (this.isIdInUse(newId)) {
-            newId++; // Si está en uso, aumentar el ID hasta encontrar uno libre
+            newId++; 
         }
 
         const newProduct = {
@@ -95,46 +85,7 @@ class ProductManager {
         return newProduct;
     }
 
-        /*const { title, description, price, stock } = product; // Desestructurar el objeto
-
-        if (!title || !description || price == null || stock == null) {
-            throw new Error("El producto debe tener título, descripción, precio y stock");
-        }
-    
-        // Crear un nuevo producto con un ID único
-        const newProduct = {
-            id: this.products.length > 0 ? this.products[this.products.length - 1].id + 1 : 1, 
-            title,
-            description,
-            price,
-            stock,
-        };
-    
-        this.products.push(newProduct);
-        await fs.writeFile(this.productsFile, JSON.stringify(this.products, null, 2));
-    
-        return newProduct;*/ // Devolver el nuevo producto agregado
-
-        /*const newProduct = {
-            id: product.length + 1, // Se asignará en ProductManager
-            title: title,
-            description:description,
-            price:price,
-            stock:stock,
-
-            
-
-        }
-
-
-        if (!product.title || !product.price || !product.description || product.stock == null) {
-            throw new Error("El producto debe tener título, descripción, precio y stock");
-        }
-
-        this.products.push(newProduct);
-        await fs.writeFile(this.productsFile, JSON.stringify(this.products, null, 2));
-        return product;*/
-    
+        
 
     async updateProduct(id, updateData) {
          // Buscar el índice del producto en el array
@@ -159,16 +110,7 @@ class ProductManager {
         
         
         
-        /*const product = this.products.find(p => p.id === id);
-    
-        if (product) {
-            const newProduct = { id: Date.now(), ...product, ...updateData }; // Nuevo objeto
-            this.products.push(newProduct); // Agregarlo en lugar de modificar el original
-            await fs.writeFile(this.productsFile, JSON.stringify(this.products, null, 2));
-    
-            return newProduct;
-        }
-        return null;*/
+        
     }
 
     async deleteProduct(id) {
