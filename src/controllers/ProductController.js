@@ -2,19 +2,20 @@ const ProductManager  = require('../managers/ProductManager.js');
 
 let productManager;
 
-// Función para inicializar `ProductManager` correctamente
+
+
 const initializeProductManager = async () => {
     productManager = new ProductManager();
-    await new Promise(resolve => setTimeout(resolve, 500)); // Esperar carga del archivo
+    await new Promise(resolve => setTimeout(resolve, 500)); 
 };
 
-initializeProductManager(); // Llamar a la inicialización antes de procesar rutas
+initializeProductManager(); 
 
 const getAllProducts = async (req, res) => {
  
     try {
         const products = await productManager.getAllProducts();
-        res.render('productTiempoReal', { products: products });  // Aquí pasas el array de productos como parte de un objeto con la clave 'products'
+        res.render('productTiempoReal', { products: products });  
     } catch (error) {
         console.error('Error al obtener productos:', error);
         res.status(500).json({ message: 'Error fetching products' });
@@ -39,9 +40,10 @@ const addProduct = async (req, res) => {
     
     try {
         const product = req.body; // Recibir el producto del body
-        const newProduct = await productManager.addProduct(product); // Llamar a ProductManager
+        const newProduct = await productManager.addProduct(product); 
 
         // Emitir evento de WebSocket para actualizar la lista en tiempo real
+
         io.emit('productListUpdate', await productManager.getAllProducts());
     
         res.status(201).json({ message: "Producto agregado", product: newProduct });
@@ -82,6 +84,7 @@ const deleteProduct = async (req, res) => {
         const updatedProducts = await productManager.deleteProduct(parseInt(id));
 
         // Emitir evento de WebSocket para actualizar la lista en tiempo real
+
         io.emit('productListUpdate', updatedProducts);
 
         res.json(updatedProducts);

@@ -49,8 +49,8 @@
             e.preventDefault();
             const title = document.getElementById('title').value;
             const description = document.getElementById('description').value;
-            const price = document.getElementById('price').value;
-            const stock = document.getElementById('stock').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const stock = parseInt(document.getElementById('stock').value);
 
             socket.emit('addProduct', { title, description, price, stock });
             e.target.reset();

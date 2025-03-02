@@ -41,7 +41,7 @@ class ProductManager {
 
     async getAllProducts() {
         try {
-            const data = await fs.readFile(productsFile, 'utf-8');
+            const data = await fs.readFile(this.productsFile, 'utf-8');
             return JSON.parse(data);
         } catch (error) {
             console.error('Error al leer productos:', error);
@@ -89,13 +89,15 @@ class ProductManager {
 
     async updateProduct(id, updateData) {
          // Buscar el índice del producto en el array
+
         const productIndex = this.products.findIndex(p => p.id === id);
 
         if (productIndex === -1) {
-            return null; // Si el producto no existe, devolver null
+            return null; 
         }
 
         // Mantener los valores originales si no se envían en updateData
+
         this.products[productIndex] = {
             ...this.products[productIndex], 
             ...updateData 
@@ -104,22 +106,29 @@ class ProductManager {
         // Guardar los cambios en el archivo JSON
         await fs.writeFile(this.productsFile, JSON.stringify(this.products, null, 2));
 
-        return this.products[productIndex]; // Devolver el producto actualizado
-        
-        
+        return this.products[productIndex];   
         
         
         
         
     }
 
-    async deleteProduct(id) {
-        const updatedProducts = this.products.filter(product => product.id !== id);
-        if (updatedProducts.length === this.products.length) return null;
+    async deleteProduct(productId) {
+        if (!this.productsFile) {
+            throw new Error("El path del archivo no está definido.");
+        }
 
-        this.products = updatedProducts;
-        await fs.writeFile(this.productsFile, JSON.stringify(this.products, null, 2));
-        return updatedProducts;
+        const products = await this.getAllProducts();
+        const filteredProducts = products.filter(prod => prod.id !== productId);
+
+        if (products.length === filteredProducts.length) {
+            console.log(`Producto con ID ${productId} no encontrado.`);
+            return false;
+        }
+
+        await fs.writeFile(this.productsFile, JSON.stringify(filteredProducts, null, 2));
+        console.log(`Producto con ID ${productId} eliminado.`);
+        return true;
     }
 
 }

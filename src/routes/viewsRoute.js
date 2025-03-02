@@ -7,7 +7,7 @@ const productManager = new ProductManager();
 // Ruta para la vista "home"
 router.get('/', async (req, res) => {
     try {
-        const products = await productManager.getAllProducts();  // Asegúrate de llamar a getAllProducts para obtener la lista actualizada
+        const products = await productManager.getAllProducts(); 
         res.render('home', { products });
     } catch (error) {
         console.error('Error al obtener productos:', error);

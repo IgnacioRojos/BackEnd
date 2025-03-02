@@ -3,6 +3,7 @@ const path = require('path');
 const ProductManager = require('../managers/ProductManager');
 
 // Obtener la ruta del archivo carts.json
+
 const cartsFile = path.join(__dirname, '../data/DataCart.json');
 
 class CartManager {
@@ -17,14 +18,14 @@ class CartManager {
 
     async getCartById(id) {
         const carts = await this.getAllCarts();
-        return carts.find(cart => cart.id === parseInt(id)); // Buscar el carrito por id
+        return carts.find(cart => cart.id === parseInt(id)); 
     }
 
     async createCart() {
         const carts = await this.getAllCarts();
         const newCart = { id: carts.length ? carts[carts.length - 1].id + 1 : 1, products: [] };
         carts.push(newCart);
-        await fs.writeFile(cartsFile, JSON.stringify(carts, null, 2)); // Guardar los cambios
+        await fs.writeFile(cartsFile, JSON.stringify(carts, null, 2)); 
         return newCart;
     }
 
@@ -44,9 +45,11 @@ class CartManager {
             const cart = carts[cartIndex];
     
             // Crear una instancia de ProductManager
+
             const productManager = new ProductManager();
     
             // Obtener los productos usando la instancia
+
             const products = await productManager.getAllProducts();
             console.log('Productos cargados:', products);
     
@@ -57,6 +60,7 @@ class CartManager {
             }
     
             // Buscar si el producto ya está en el carrito
+
             const productIndex = cart.products.findIndex(p => p.product === parseInt(productId));
             if (productIndex === -1) {
                 cart.products.push({ product: parseInt(productId), quantity: 1 });
@@ -65,6 +69,7 @@ class CartManager {
             }
     
             // Guardar cambios en JSON
+            
             await fs.writeFile(cartsFile, JSON.stringify(carts, null, 2));
     
           

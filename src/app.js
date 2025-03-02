@@ -2,11 +2,11 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const { engine } = require('express-handlebars');
-const ProductRouter = require('../src/routes/ProductRoute');
+const ProductRouter = require('../src/routes/ProductRoute')
 const CartRouter = require('../src/routes/CartRoute');
 const path = require('path');
 
-const viewsRouter = require('../src/routes/viewsRoute'); // Importa el router de vistas
+const viewsRouter = require('../src/routes/viewsRoute'); 
 
 
 
@@ -71,14 +71,16 @@ server.listen(PORT, () => {
 let connectedClients = 0; // Contador de clientes conectados
 
 io.on('connection', async (socket) => {
-    connectedClients++; // Aumenta cuando se conecta un cliente
+    connectedClients++; 
     console.log(`Cliente conectado. Total de clientes: ${connectedClients}`);
 
     // Enviar la lista de productos actuales
+
     const products = await productManager.getAllProducts();
     io.emit('productListUpdate', products); 
 
     // Cuando se agrega un producto
+
     socket.on('addProduct', async (newProduct) => {
         await productManager.addProduct(newProduct);
         const updatedProducts = await productManager.getAllProducts();
@@ -86,6 +88,7 @@ io.on('connection', async (socket) => {
     });
 
     // Cuando se elimina un producto
+
     socket.on('deleteProduct', async (productId) => {
         await productManager.deleteProduct(productId);
         const updatedProducts = await productManager.getAllProducts();
@@ -93,7 +96,7 @@ io.on('connection', async (socket) => {
     });
 
     socket.on('disconnect', () => {
-        connectedClients--; // Reduce cuando un cliente se desconecta
+        connectedClients--; 
         console.log(`Cliente desconectado. Total de clientes: ${connectedClients}`);
     });
 });
