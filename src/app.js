@@ -52,7 +52,6 @@ app.get('/productTiempoReal', (req, res) => {
 // Página principal con todos los productos
 app.get('/', async (req, res) => {
     try {
-        // Llamar al controlador pasando req y res
         await ProductController.getAllProducts(req, res);
     } catch (error) {
         console.error('Error en la ruta principal', error);
