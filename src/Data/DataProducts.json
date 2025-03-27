@@ -1,30 +1,33 @@
 [
   {
-    "id": 4,
-    "title": "kiksoajgfpg",
-    "description": "gdasgadfas",
+    "title": "heladera",
+    "description": "gama",
     "price": "1678897",
     "stock": "25"
   },
   {
-    "id": 9,
     "title": "celular",
     "description": "samsung",
     "price": "1500000",
     "stock": "2"
   },
   {
-    "id": 10,
     "title": "televisor",
     "description": "lg",
     "price": "189845987",
     "stock": "1"
   },
   {
-    "id": 11,
-    "title": "sflhakfjhoasfi",
-    "description": "sfafasfasf",
+
+    "title": "remera",
+    "description": "adidas",
     "price": "12564964",
     "stock": "56"
+  },
+  {
+    "title": "freidora",
+    "description": "sony",
+    "price": "156987136",
+    "stock": "15960"
   }
 ]

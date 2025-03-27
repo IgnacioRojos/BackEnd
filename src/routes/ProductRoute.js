@@ -8,7 +8,7 @@ const ProductController = require('../controllers/ProductController');
 router.get('/', ProductController.getAllProducts);
 
 // Obtener un producto por su id
-router.get('/encontrar', ProductController.getProductById);
+router.get('/products/:pid', ProductController.getProductById);
 
 // Crear un nuevo producto
 router.post('/product', ProductController.addProduct);
@@ -19,6 +19,9 @@ router.put('/update', ProductController.updateProduct);
 
 // Eliminar un producto
 router.delete('/delete', ProductController.deleteProduct);
+
+
+router.get("/home", ProductController.renderHome);
 
 module.exports = router; 
 

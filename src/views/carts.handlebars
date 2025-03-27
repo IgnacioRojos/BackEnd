@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito</title>
+</head>
+<body>
+    <h1>Carrito</h1>
+    
+    <!-- Mostrar los productos en el carrito -->
+    <ul>
+        {{#each products}}
+            <li id="product-{{this.product._id}}">
+                {{this.product.title}} - ${{this.product.price}} ({{this.quantity}} unidades)
+                <button onclick="removeFromCart('{{../cart._id}}', '{{this.product._id}}')">Eliminar</button>
+            </li>
+        {{else}}
+            <li>No hay productos en el carrito.</li>
+        {{/each}}
+    </ul>
+
+    <!-- Script para eliminar producto del carrito -->
+    <script>
+        function removeFromCart(cartId, productId) {
+            // Realizar la solicitud DELETE para eliminar el producto utilizando ObjectId
+            fetch(`/api/carts/${cartId}/products/${productId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Producto eliminado del carrito');
+                const productElement = document.getElementById(`product-${productId}`);
+                if (productElement) productElement.remove(); // Remover el producto del DOM
+            })
+            .catch(err => {
+                console.error('Error al eliminar el producto:', err);
+                alert('Hubo un error al eliminar el producto');
+            });
+        }
+
+    </script>
+</body>
+</html>

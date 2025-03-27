@@ -6,31 +6,66 @@
     <title>Productos</title>
 </head>
 <body>
-    <h1>Lista de productos</h1>
-    <ul id="productList">
-        {{#each products}}
-            <li>{{this.title}} - ${{this.price}} ({{this.stock}} disponibles)</li>
-        {{else}}
-            <li>No hay productos disponibles.</li>
-        {{/each}}
+    <h1>Lista de Productos</h1>
+
+    <ul>
+    {{#each products}}
+        <li>{{this.title}} - ${{this.price}}
+        <button onclick="addToCart('{{this._id}}')">Agregar al carrito</button>
+        </li>
+    {{/each}}
     </ul>
-    <button><a href="/productTiempoReal">Ver productos en tiempo real</a></button>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
+    <!-- Enlace o botón para ir al carrito -->
 
-        socket.on('productListUpdate', (updatedProducts) => {
-            const productList = document.getElementById('productList');
-            productList.innerHTML = '';  // Limpiar la lista antes de actualizarla
-
-            updatedProducts.forEach(product => {
-                const li = document.createElement('li');
-                li.innerHTML = `${product.title} - $${product.price} (${product.stock} disponibles)`;
-                productList.appendChild(li);
-            });
-        });
+    <a href="/cart">
+        <button>Ver Carrito</button>
+    </a>
         
+
+    <div style="padding-top: 10px;">
+        {{#if hasPrevPage}}
+            <a href="{{prevLink}}&query={{query}}&category={{category}}">Anterior</a>
+        {{/if}}
+        {{#if hasNextPage}}
+            <a href="{{nextLink}}&query={{query}}&category={{category}}">Siguiente</a>
+        {{/if}}
+    </div>
+
+    <script>
+
+        const cartId = "{{cart._id}}"
+        console.log(cart._id);
+
+        function addToCart(productId) {
+            const cartId = "{{cartId}}"; // Asegúrate de que cartId esté disponible en el script
+
+            if (!cartId) {
+                console.error('No se encontró el cartId');
+                return;
+            }
+            fetch(`/api/carts/:${cartId}/product/:${productId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            body: JSON.stringify({ quantity: 1 }) // Puedes ajustar la cantidad según sea necesario
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al agregar el producto');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Producto agregado al carrito', data);
+            })
+            .catch(error => {
+                console.error('Error al agregar el producto:', error);
+            });
+
+                
+        }
     </script>
 </body>
 </html>

@@ -1,137 +1,113 @@
-const fs = require('fs').promises; 
-const path = require('path');
-
-
-const productsFile = path.join(__dirname, '../data/DataProducts.json');
-
-
+const Product = require('../models/product'); // Importamos el modelo de Mongoose
+const mongoose = require('mongoose');
 
 class ProductManager {
-
-    isIdInUse(id) {
-        return this.products.some(product => product.id === id);
-    }
     constructor() {
-        
-        this.productsDir = path.join(__dirname, '../data'); 
-        this.productsFile = path.join(this.productsDir, 'DataProducts.json'); 
-        this.products = [];
-        this.init();
+        console.log("📦 ProductManager inicializado con MongoDB");
     }
 
-    async init() {
+    /**
+     * Obtener todos los productos con paginación, orden y filtros.
+     */
+    async getAllProducts({ limit = 10, page = 1, sort = 'asc', filter = {} }) {
         try {
-            
-            await fs.mkdir(this.productsDir, { recursive: true });
-
-            // Verifica si el archivo JSON existe
-            await fs.access(this.productsFile);
-            const data = await fs.readFile(this.productsFile, 'utf-8');
-            this.products = JSON.parse(data);
-        } catch (error) {
-            if (error.code === 'ENOENT') {
-                // Si el archivo no existe, lo crea con un array vacío
-                this.products = [];
-                await fs.writeFile(this.productsFile, JSON.stringify(this.products, null, 2));
-            } else {
-                console.error("Error al inicializar productos:", error);
-            }
-        }
-    }
-
-    async getAllProducts() {
-        try {
-            const data = await fs.readFile(this.productsFile, 'utf-8');
-            return JSON.parse(data);
-        } catch (error) {
-            console.error('Error al leer productos:', error);
-            return [];
-            }
-    }
+            const sortOrder = sort === 'desc' ? -1 : 1;
     
+            const options = {
+                page,
+                limit,
+                sort: { price: sortOrder }
+            };
+    
+            const result = await Product.paginate(filter, options);
+            return result; // Devolver directamente el resultado
+        } catch (error) {
+            console.error("❌ Error al obtener productos:", error);
+            return {
+                docs: [],
+                totalPages: 0,
+                prevPage: null,
+                nextPage: null,
+                page: 1,
+                hasPrevPage: false,
+                hasNextPage: false,
+                prevLink: null,
+                nextLink: null
+            };
+        }
+    }
 
+    /**
+     * Obtener un producto por ID.
+     */
     async getProductById(id) {
-        return this.products.find(product => product.id === parseInt(id)) || null;
+        try {
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                throw new Error("ID de producto inválido");
+            }
+
+            const product = await Product.findById(id);
+            return product || null;
+        } catch (error) {
+            console.error(`❌ Error al obtener producto con ID ${id}:`, error);
+            return null;
+        }
     }
 
-    async addProduct(product) {
-
-        const { title, description, price, stock } = product;
-
-        
-
-        if (!title || !description || price == null || stock == null) {
-            throw new Error("El producto debe tener título, descripción, precio y stock");
+    /**
+     * Agregar un nuevo producto a la base de datos.
+     */
+    async addProduct(productData) {
+        try {
+            const newProduct = await Product.create(productData);
+            return newProduct;
+        } catch (error) {
+            console.error("❌ Error al agregar producto:", error);
+            throw error;
         }
-
-        let newId = this.products.length > 0 ? Math.max(...this.products.map(p => p.id)) + 1 : 1;
-
-        
-        while (this.isIdInUse(newId)) {
-            newId++; 
-        }
-
-        const newProduct = {
-            id: newId,
-            title,
-            description,
-            price,
-            stock,
-        };
-
-        this.products.push(newProduct);
-        await fs.writeFile(this.productsFile, JSON.stringify(this.products, null, 2));
-
-        return newProduct;
     }
 
-        
-
+    /**
+     * Actualizar un producto existente por ID.
+     */
     async updateProduct(id, updateData) {
-         // Buscar el índice del producto en el array
+        try {
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                throw new Error("ID de producto inválido");
+            }
 
-        const productIndex = this.products.findIndex(p => p.id === id);
+            const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
 
-        if (productIndex === -1) {
-            return null; 
+            return updatedProduct || null;
+        } catch (error) {
+            console.error(`❌ Error al actualizar producto con ID ${id}:`, error);
+            return null;
         }
-
-        // Mantener los valores originales si no se envían en updateData
-
-        this.products[productIndex] = {
-            ...this.products[productIndex], 
-            ...updateData 
-        };
-
-        // Guardar los cambios en el archivo JSON
-        await fs.writeFile(this.productsFile, JSON.stringify(this.products, null, 2));
-
-        return this.products[productIndex];   
-        
-        
-        
-        
     }
 
-    async deleteProduct(productId) {
-        if (!this.productsFile) {
-            throw new Error("El path del archivo no está definido.");
-        }
+    /**
+     * Eliminar un producto por ID.
+     */
+    async deleteProduct(id) {
+        try {
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                throw new Error("ID de producto inválido");
+            }
 
-        const products = await this.getAllProducts();
-        const filteredProducts = products.filter(prod => prod.id !== productId);
+            const deletedProduct = await Product.findByIdAndDelete(id);
 
-        if (products.length === filteredProducts.length) {
-            console.log(`Producto con ID ${productId} no encontrado.`);
+            if (!deletedProduct) {
+                console.log(`⚠️ Producto con ID ${id} no encontrado.`);
+                return false;
+            }
+
+            console.log(`✅ Producto con ID ${id} eliminado.`);
+            return true;
+        } catch (error) {
+            console.error(`❌ Error al eliminar producto con ID ${id}:`, error);
             return false;
         }
-
-        await fs.writeFile(this.productsFile, JSON.stringify(filteredProducts, null, 2));
-        console.log(`Producto con ID ${productId} eliminado.`);
-        return true;
     }
-
 }
-
 
 module.exports = ProductManager;

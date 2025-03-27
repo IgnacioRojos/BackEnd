@@ -26,9 +26,10 @@
             <li>No hay productos disponibles.</li>
         {{/each}}
     </ul>
-        <script src="/socket.io/socket.io.js"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-    const socket = io();
+        const socket = io();
 
         socket.on('productListUpdate', (updatedProducts) => {
             const productList = document.getElementById('productList');
@@ -60,6 +61,5 @@
             socket.emit('deleteProduct', productId);
         }
     </script>
-    
 </body>
 </html>

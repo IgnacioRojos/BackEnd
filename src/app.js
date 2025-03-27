@@ -2,100 +2,133 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const { engine } = require('express-handlebars');
-const ProductRouter = require('../src/routes/ProductRoute')
-const CartRouter = require('../src/routes/CartRoute');
 const path = require('path');
+const mongoose = require('mongoose');
 
-const viewsRouter = require('../src/routes/viewsRoute'); 
+// Rutas
+const ProductRouter = require('../src/routes/ProductRoute');
+const CartRouter = require('../src/routes/CartRoute');
+const viewsRouter = require('../src/routes/viewsRoute');
 
+// Modelos
+const Product = require('../src/models/product'); 
+const Cart = require("../src/models/cart")
 
+const { migrateData } = require('../src/script/migrateData'); 
 
-
-
-const ProductManager = require('../src/managers/ProductManager'); 
-const productManager = new ProductManager();
-
-const ProductController = require('../src/controllers/ProductController');
-
-// Crear la instancia de express
 const app = express();
-
-// Crear el servidor HTTP
 const server = http.createServer(app);
-
-// Configuración de Socket.IO
 const io = socketIo(server);
+
+const PORT = 8080;
+const DB_URI = "mongodb+srv://nachorojos99:ignacio2208@cluster0.wr7tz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; 
 
 // Configuración de Handlebars
 app.engine('handlebars', engine({ defaultLayout: false }));
 app.set('view engine', 'handlebars');
-
-// Carpeta pública para archivos estáticos
-
 app.set('views', path.join(__dirname, '../src/views'));
 
-
-// Middleware para parsear datos JSON y formularios
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rutas
-app.use('/api', ProductRouter);
-app.use('/api', CartRouter);
-app.use('/', viewsRouter); 
+// Rutas API
+app.use('/api/products', ProductRouter);
+app.use('/api/carts', CartRouter);
+app.use('/', viewsRouter);
 
-// Ruta para mostrar productos en tiempo real
-app.get('/productTiempoReal', (req, res) => {
+// Página de productos en tiempo real
+/*app.get('/productTiempoReal', (req, res) => {
     res.render('productTiempoReal', { products: [] });
-});
+});*/
 
-// Página principal con todos los productos
+// Ruta principal
 app.get('/', async (req, res) => {
+    console.log('req.user:', req.user); // Verifica si req.user es null o tiene un _id
+    
     try {
-        await ProductController.getAllProducts(req, res);
+        const products = await Product.find().lean();
+
+        if (!req.user) {
+            console.log('No hay usuario autenticado, creando carrito anónimo');
+            const cartId = 'anonimo'; // Carrito anónimo
+            const cart = await Cart.findOne({ user: cartId }).lean();
+
+            if (!cart) {
+                const newCart = new Cart({ user: cartId, products: [] });
+                await newCart.save();
+                return res.render('home', { products, cartId: newCart._id });
+            }
+
+            return res.render('home', { products, cartId: cart._id });
+        }
+
+        // Si el usuario está autenticado
+        const cart = await Cart.findOne({ user: req.user._id }).lean();
+        if (!cart) {
+            const newCart = new Cart({ user: req.user._id, products: [] });
+            await newCart.save();
+            return res.render('home', { products, cartId: newCart._id });
+        }
+
+        res.render('home', { products, cartId: cart._id });
     } catch (error) {
-        console.error('Error en la ruta principal', error);
+        console.error('❌ Error en la ruta principal:', error);
         res.status(500).send('Error en la ruta principal');
     }
 });
+// Conexión a MongoDB y migración de datos
+mongoose.connect(DB_URI)
+  .then(async () => {
+    console.log('✅ Conectado a MongoDB');
+    await migrateData();
+    console.log('✅ Migración completada');
+    iniciarServidor();
+  })
+  .catch(err => {
+    console.error('❌ Error al conectar con MongoDB:', err);
+    process.exit(1);
+  });
 
-// Iniciar el servidor
-const PORT = 8080;
-server.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
+const iniciarServidor = () => {
+    server.listen(PORT, () => {
+        console.log(`🚀 Servidor corriendo en el puerto http://localhost:${PORT}/`);
+    });
+};
 
-// WebSocket para manejar actualizaciones en tiempo real
-
-let connectedClients = 0; // Contador de clientes conectados
-
+// Configuración de Socket.IO
 io.on('connection', async (socket) => {
-    connectedClients++; 
-    console.log(`Cliente conectado. Total de clientes: ${connectedClients}`);
+    console.log(`⚡ Cliente conectado. Total: ${io.engine.clientsCount}`);
 
-    // Enviar la lista de productos actuales
-
-    const products = await productManager.getAllProducts();
-    io.emit('productListUpdate', products); 
-
-    // Cuando se agrega un producto
+    try {
+        const products = await Product.find();
+        io.emit('productListUpdate', products);
+    } catch (error) {
+        console.error('❌ Error al obtener productos:', error);
+    }
 
     socket.on('addProduct', async (newProduct) => {
-        await productManager.addProduct(newProduct);
-        const updatedProducts = await productManager.getAllProducts();
-        io.emit('productListUpdate', updatedProducts);
+        try {
+            const product = new Product(newProduct);
+            await product.save();
+            const updatedProducts = await Product.find();
+            io.emit('productListUpdate', updatedProducts);
+        } catch (error) {
+            console.error('❌ Error al agregar producto:', error);
+        }
     });
 
-    // Cuando se elimina un producto
-
     socket.on('deleteProduct', async (productId) => {
-        await productManager.deleteProduct(productId);
-        const updatedProducts = await productManager.getAllProducts();
-        io.emit('productListUpdate', updatedProducts);
+        try {
+            await Product.findByIdAndDelete(productId);
+            const updatedProducts = await Product.find();
+            io.emit('productListUpdate', updatedProducts);
+        } catch (error) {
+            console.error('❌ Error al eliminar producto:', error);
+        }
     });
 
     socket.on('disconnect', () => {
-        connectedClients--; 
-        console.log(`Cliente desconectado. Total de clientes: ${connectedClients}`);
+        console.log(`⚠️ Cliente desconectado. Total: ${io.engine.clientsCount}`);
     });
 });
