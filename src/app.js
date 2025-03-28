@@ -4,6 +4,7 @@ const socketIo = require('socket.io');
 const { engine } = require('express-handlebars');
 const path = require('path');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 // Rutas
 const ProductRouter = require('../src/routes/ProductRoute');
@@ -19,6 +20,9 @@ const { migrateData } = require('../src/script/migrateData');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+
+
+app.use(cookieParser()); 
 
 const PORT = 8080;
 const DB_URI = "mongodb+srv://nachorojos99:ignacio2208@cluster0.wr7tz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; 
@@ -44,34 +48,28 @@ app.use('/', viewsRouter);
 
 // Ruta principal
 app.get('/', async (req, res) => {
-    console.log('req.user:', req.user); // Verifica si req.user es null o tiene un _id
+    console.log('req.user:', req.user); // Verifica si req.user existe
     
     try {
         const products = await Product.find().lean();
 
-        if (!req.user) {
-            console.log('No hay usuario autenticado, creando carrito anónimo');
-            const cartId = 'anonimo'; // Carrito anónimo
-            const cart = await Cart.findOne({ user: cartId }).lean();
+        let cartId = 'anonimo'; // Carrito anónimo por defecto
+        let cart = null;
 
+        if (req.user && req.user._id) { // ✅ Verificar si req.user existe antes de acceder a _id
+            cart = await Cart.findOne({ user: req.user._id }).lean();
             if (!cart) {
-                const newCart = new Cart({ user: cartId, products: [] });
+                const newCart = new Cart({ user: req.user._id, products: [] });
                 await newCart.save();
-                return res.render('home', { products, cartId: newCart._id });
+                cartId = newCart._id;
+            } else {
+                cartId = cart._id;
             }
-
-            return res.render('home', { products, cartId: cart._id });
+        } else {
+            console.log('No hay usuario autenticado, usando carrito anónimo');
         }
 
-        // Si el usuario está autenticado
-        const cart = await Cart.findOne({ user: req.user._id }).lean();
-        if (!cart) {
-            const newCart = new Cart({ user: req.user._id, products: [] });
-            await newCart.save();
-            return res.render('home', { products, cartId: newCart._id });
-        }
-
-        res.render('home', { products, cartId: cart._id });
+        res.render('home', { products, cartId });
     } catch (error) {
         console.error('❌ Error en la ruta principal:', error);
         res.status(500).send('Error en la ruta principal');

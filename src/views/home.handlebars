@@ -33,23 +33,20 @@
     </div>
 
     <script>
-
-        const cartId = "{{cart._id}}"
-        console.log(cart._id);
-
         function addToCart(productId) {
-            const cartId = "{{cartId}}"; // Asegúrate de que cartId esté disponible en el script
+            const cartId = "anonimo"; // Asegúrate de que cartId esté disponible en el script
 
             if (!cartId) {
                 console.error('No se encontró el cartId');
                 return;
             }
-            fetch(`/api/carts/:${cartId}/product/:${productId}`, {
+
+            fetch(`/api/carts/${cartId}/product/${productId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-            body: JSON.stringify({ quantity: 1 }) // Puedes ajustar la cantidad según sea necesario
+                body: JSON.stringify({ quantity: 1 }) // Puedes ajustar la cantidad según sea necesario
             })
             .then(response => {
                 if (!response.ok) {
@@ -63,8 +60,6 @@
             .catch(error => {
                 console.error('Error al agregar el producto:', error);
             });
-
-                
         }
     </script>
 </body>

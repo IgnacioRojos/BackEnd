@@ -8,6 +8,8 @@ const {Cart} = require("../models/cart.js")
 
 
 
+
+
 const initializeProductManager = async () => {
     productManager = new ProductManager();
     await new Promise(resolve => setTimeout(resolve, 500)); 
@@ -155,11 +157,18 @@ const renderHome = async (req, res) => {
                 cart = await Cart.create({ userId: req.user._id, products: [] });
             }
         } else {
+            const cartCookie = req.cookieParser.cartId;
+
+            if (cartCookie){
+                cart = await Cart.findById(cartCookie);
+            }
+            
             // Si el usuario no está autenticado, creamos un carrito anónimo
-            cart = await Cart.findOne({ isAnonymous: true });
+
             if (!cart) {
                 // Si no existe un carrito anónimo, creamos uno
                 cart = await Cart.create({ isAnonymous: true, products: [] });
+                res.cookie ("cartId", cart._id.toString(), {httpOnly: true});
             }
         }
 

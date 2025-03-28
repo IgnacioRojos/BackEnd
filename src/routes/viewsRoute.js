@@ -1,17 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const ProductManager = require('../managers/ProductManager');
-
 const productManager = new ProductManager();
-
-const CartManager = require('../managers/CartManager'); // Importa el CartManager
+const CartManager = require("../managers/CartManager"); // Importa el CartManager
 const cartManager = new CartManager();
 
 // Ruta para mostrar los productos con paginación, ordenación y filtros
 router.get('/products', async (req, res) => {
     try {
         const { limit = 10, page = 1, sort = 'asc', query = '', category } = req.query;
-        
         
         let filter = { $and: [] };
 
@@ -31,7 +28,10 @@ router.get('/products', async (req, res) => {
             page: parseInt(page),
             sort,
             filter
-        })
+        });
+
+        // Obtener el cartId de las cookies, si no existe se asigna 'anonimo'
+        const cartId = req.cookies.cartId || 'anonimo';
 
         console.log("Productos enviados a Handlebars:", result.docs);
 
@@ -40,7 +40,8 @@ router.get('/products', async (req, res) => {
             totalPages: result.totalPages,
             page: result.page,
             prevPage: result.hasPrevPage ? `/products?page=${result.prevPage}` : null,
-            nextPage: result.hasNextPage ? `/products?page=${result.nextPage}` : null
+            nextPage: result.hasNextPage ? `/products?page=${result.nextPage}` : null,
+            cartId  // Pasar el cartId al template de Handlebars
         });
 
     } catch (error) {
