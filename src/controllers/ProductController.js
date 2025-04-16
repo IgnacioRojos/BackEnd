@@ -174,6 +174,8 @@ const renderHome = async (req, res) => {
 
         // Renderizamos la vista 'home' pasando los productos y el carrito
         res.render('home', { products, cart });
+        console.log("Renderizando vista home con cart:", cart);
+        
     } catch (error) {
         res.status(500).json({ 
             status: 'error', 

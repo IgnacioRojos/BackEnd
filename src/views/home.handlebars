@@ -18,7 +18,7 @@
 
     <!-- Enlace o botón para ir al carrito -->
 
-    <a href="/cart">
+    <a href="api/carts/cart/view">
         <button>Ver Carrito</button>
     </a>
         
@@ -33,11 +33,14 @@
     </div>
 
     <script>
-        function addToCart(productId) {
-            const cartId = "anonimo"; // Asegúrate de que cartId esté disponible en el script
 
-            if (!cartId) {
+    const cartId = "{{cart._id}}";
+    console.log("Cart ID:", cartId);
+        function addToCart(productId) {
+                // Si no existe tal id recargamos la pagina en ese caso
+            if (!cartId || cartId === "undefined") {
                 console.error('No se encontró el cartId');
+                alert('Primero recargá la página para generar tu carrito.');
                 return;
             }
 
@@ -46,7 +49,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ quantity: 1 }) // Puedes ajustar la cantidad según sea necesario
+                body: JSON.stringify({ quantity: 1 })
             })
             .then(response => {
                 if (!response.ok) {

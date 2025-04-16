@@ -14,8 +14,7 @@ router.put('/api/carts/:cid/product/:pid', CartController.addProductToCart);
 
 router.delete('/:cid/product/:pid', CartController.deleteProductFromCart);
 
-router.get('/cart', (req, res) => {
-    res.render('carts');  
-});
+// Vista para ver el carrito (corregida)
+router.get('/cart/view', CartController.renderCartView);
 
 module.exports = router;

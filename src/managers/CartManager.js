@@ -43,14 +43,6 @@ class CartManager {
 
     // Agregar un producto a un carrito
     async addProductToCart(req, res) {
-        const { cid, pid } = req.params;  // Obtenemos los valores de la URL
-        console.log(`Parámetros recibidos: cid = ${cid}, pid = ${pid}`);
-        const { quantity } = req.body;    // Obtenemos la cantidad desde el cuerpo de la solicitud
-    
-        console.log(`Añadiendo producto al carrito. Cart ID: ${cid}, Product ID: ${pid}, Quantity: ${quantity}`);
-        if (!cid || !pid) {
-            return res.status(400).json({ error: 'Faltan parámetros en la URL' });
-        }
     
         try {
             // Validar los IDs

@@ -132,6 +132,27 @@ const clearCart = async (req, res) => {
   }
 };
 
+const renderCartView = async (req, res) => {
+  try {
+      const cartId = req.cookies.cartId;
+
+      if (!cartId) {
+          return res.status(400).send('No hay carrito asignado');
+      }
+
+      const cart = await Cart.findById(cartId).populate('products.product').lean();
+
+      if (!cart) {
+          return res.status(404).send('Carrito no encontrado');
+      }
+
+      res.render('carts', { cart, products: cart.products });
+  } catch (error) {
+      console.error('❌ Error al renderizar carrito:', error);
+      res.status(500).send('Error al cargar el carrito');
+  }
+};
+
 
 
 
@@ -144,6 +165,7 @@ module.exports = {
   updateProductQuantity,
   clearCart,
   getCartById,
-  getAllCarts
+  getAllCarts,
+  renderCartView
 };
 

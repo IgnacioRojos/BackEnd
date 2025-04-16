@@ -30,8 +30,7 @@ router.get('/products', async (req, res) => {
             filter
         });
 
-        // Obtener el cartId de las cookies, si no existe se asigna 'anonimo'
-        const cartId = req.cookies.cartId || 'anonimo';
+        
 
         console.log("Productos enviados a Handlebars:", result.docs);
 

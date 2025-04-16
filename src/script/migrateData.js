@@ -9,69 +9,66 @@ const dataCartFile = path.join(__dirname, '../data/DataCart.json');
 
 const migrateData = async () => {
   try {
-    // Primero migramos los productos (sin ID)
+    // Leer productos del JSON
     const productsData = JSON.parse(fs.readFileSync(dataProductsFile, 'utf-8'));
 
-    // Convertir los productos para quitar el campo `id` numérico y dejar que MongoDB genere el ObjectId
-    const updatedProducts = productsData.map(product => {
-      // Eliminamos el campo `id` para que MongoDB lo cree automáticamente
-      const { id, ...productData } = product;
-      return productData;  // Retornamos los datos sin el campo `id`
-    });
+    // Map para relacionar el id de FS luego
+    const idMap = {};
 
-    // Verificamos si el producto ya existe antes de insertarlo para evitar duplicados
-    const insertedProducts = [];
-    for (let product of updatedProducts) {
-      const exists = await Product.findOne({ title: product.title }); // Verificamos si el producto ya existe
+    for (let product of productsData) {
+      const { id, ...productData } = product;
+
+      // Verificamos si el producto ya existe en Mongo
+      let exists = await Product.findOne({ title: productData.title });
+      let newProduct;
+
       if (!exists) {
-        const newProduct = await Product.create(product); // Creamos el producto si no existe
-        insertedProducts.push(newProduct); // Lo agregamos a la lista de productos insertados
+        newProduct = await Product.create(productData);
+        console.log(`✅ Producto "${productData.title}" migrado a MongoDB.`);
       } else {
-        console.log(`Producto "${product.title}" ya existe. Omitido.`);
+        newProduct = exists;
+        console.log(`Producto "${productData.title}" ya existe. Omitido.`);
       }
+
+      // Id FS a ID Mongo!!!
+      idMap[id] = newProduct._id;
     }
 
     console.log('✅ Productos migrados a MongoDB');
 
-    // Luego, migramos los carritos
+    // Leemos los carritos del JSON
     const cartsData = JSON.parse(fs.readFileSync(dataCartFile, 'utf-8'));
 
     for (let cartData of cartsData) {
-      const cartProducts = []; // Lista de productos del carrito
+      const cartProducts = [];
 
       for (let product of cartData.products) {
-        // Buscamos el producto usando el ID numérico que tenías en el archivo de carritos
-        const foundProduct = insertedProducts.find(p => p.id === product.product); // Encontramos el producto usando su `id` original
+        const mongoProductId = idMap[product.product]; // Buscamos el nuevo _id
 
-        if (!foundProduct) {
+        if (!mongoProductId) {
           console.warn(`⚠️ Producto con ID numérico ${product.product} no encontrado en los productos migrados.`);
-          continue; // Si no encontramos el producto, lo omitimos
+          continue;
         }
 
-        // Verificamos si el producto ya está en el carrito y consolidamos las cantidades
-        const existingProduct = cartProducts.find(p => p.product.toString() === foundProduct._id.toString());
-        if (existingProduct) {
-          existingProduct.quantity += product.quantity; // Consolidamos la cantidad si ya existe
-        } else {
-          cartProducts.push({
-            product: foundProduct._id,  // Usamos el ObjectId generado por MongoDB
-            quantity: product.quantity
-          });
-        }
+        // Correcion de id
+        cartProducts.push({
+          product: mongoProductId,
+          quantity: product.quantity
+        });
       }
 
-      // Creamos el carrito con los productos consolidados
+      // Creamos y guardamos el carrito
       const cart = new Cart({
         products: cartProducts
       });
 
-      await cart.save(); // Guardamos el carrito
+      await cart.save();
     }
 
     console.log('✅ Carritos migrados a MongoDB');
+    console.log('✅ Migración completada');
   } catch (err) {
     console.error('❌ Error al migrar los datos:', err);
   }
 };
-
 module.exports = { migrateData };

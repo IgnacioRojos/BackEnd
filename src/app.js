@@ -35,41 +35,35 @@ app.set('views', path.join(__dirname, '../src/views'));
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Rutas API
 app.use('/api/products', ProductRouter);
 app.use('/api/carts', CartRouter);
 app.use('/', viewsRouter);
 
-// Página de productos en tiempo real
-/*app.get('/productTiempoReal', (req, res) => {
-    res.render('productTiempoReal', { products: [] });
-});*/
 
 // Ruta principal
 app.get('/', async (req, res) => {
-    console.log('req.user:', req.user); // Verifica si req.user existe
-    
     try {
         const products = await Product.find().lean();
+        let cart;
 
-        let cartId = 'anonimo'; // Carrito anónimo por defecto
-        let cart = null;
+        const cartCookie = req.cookies.cartId;
 
-        if (req.user && req.user._id) { // ✅ Verificar si req.user existe antes de acceder a _id
-            cart = await Cart.findOne({ user: req.user._id }).lean();
-            if (!cart) {
-                const newCart = new Cart({ user: req.user._id, products: [] });
-                await newCart.save();
-                cartId = newCart._id;
-            } else {
-                cartId = cart._id;
-            }
-        } else {
-            console.log('No hay usuario autenticado, usando carrito anónimo');
+        if (cartCookie) {
+            cart = await Cart.findById(cartCookie).lean();
         }
 
-        res.render('home', { products, cartId });
+        //Si no hay carrito creamos uno
+        if (!cart) {
+            const newCart = await Cart.create({ isAnonymous: true, products: [] });
+            res.cookie('cartId', newCart._id.toString(), { httpOnly: true });
+            cart = newCart.toObject(); // Convertimos a objeto
+        }
+
+        // Enviamos productos y carrito a la vista
+        res.render('home', { products, cart });
     } catch (error) {
         console.error('❌ Error en la ruta principal:', error);
         res.status(500).send('Error en la ruta principal');

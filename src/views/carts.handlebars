@@ -9,15 +9,16 @@
     <h1>Carrito</h1>
     
     <!-- Mostrar los productos en el carrito -->
-    {{#if cart}}
     <ul>
-        {{#each cart.products}}
-        <li>{{this.product.name}} - Cantidad: {{this.quantity}}</li>
+        {{#each products}}
+            <li id="product-{{this.product._id}}">
+                {{this.product.title}} - ${{this.product.price}} ({{this.quantity}} unidades)
+                <button onclick="removeFromCart('{{../cart._id}}', '{{this.product._id}}')">Eliminar</button>
+            </li>
+        {{else}}
+            <li>No hay productos en el carrito.</li>
         {{/each}}
     </ul>
-    {{else}}
-    <p>No hay productos en el carrito.</p>
-    {{/if}}
 
     <!-- Script para eliminar producto del carrito -->
     <script>
