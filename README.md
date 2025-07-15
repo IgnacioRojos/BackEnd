@@ -49,8 +49,8 @@ npm install
 3. **Configurá el archivo `.env`**
 
 ```env
-PORT = 8080;
-DB_URI = "mongodb+srv://nachorojos99:ignacio2208@cluster0.wr7tz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; 
+PORT = 8080
+DB_URI = "mongodb+srv:<usuario>@cluster0.wr7tz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 ```
 
 4. **Iniciá el servidor**
