@@ -49,8 +49,8 @@ npm install
 3. **Configurá el archivo `.env`**
 
 ```env
-MONGO_URI=tu_url_de_conexion_a_mongo_atlas
-PORT=3000
+PORT = 8080;
+DB_URI = "mongodb+srv://nachorojos99:ignacio2208@cluster0.wr7tz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; 
 ```
 
 4. **Iniciá el servidor**
