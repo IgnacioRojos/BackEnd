@@ -59,7 +59,7 @@ DB_URI = "mongodb+srv:<usuario>@cluster0.wr7tz.mongodb.net/?retryWrites=true&w=m
 npm start
 ```
 
-> El servidor estará corriendo en `http://localhost:3000/`
+> El servidor estará corriendo en `http://localhost:8080/`
 
 ---
 
