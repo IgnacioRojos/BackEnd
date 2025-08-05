@@ -73,10 +73,18 @@ app.get('/', async (req, res) => {
 mongoose.connect(DB_URI)
   .then(async () => {
     console.log('✅ Conectado a MongoDB');
-    await migrateData();
-    console.log('✅ Migración completada');
+
+    // ✅ Ejecutar migración solo si MIGRATE=true en variables de entorno
+    if (process.env.MIGRATE === 'true') {
+      console.log('📦 Ejecutando migración de datos...');
+      await migrateData();
+    } else {
+      console.log('📦 Migración omitida por configuración');
+    }
+
     iniciarServidor();
   })
+
   .catch(err => {
     console.error('❌ Error al conectar con MongoDB:', err);
     process.exit(1);
