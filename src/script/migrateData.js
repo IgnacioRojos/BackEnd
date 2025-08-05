@@ -4,8 +4,11 @@ const mongoose = require('mongoose');
 const Product = require('../models/product');
 const Cart = require('../models/cart');
 
-const dataProductsFile = path.resolve(process.cwd(), 'src/data/DataProducts.json');//fix para subir a railway
-const dataCartFile = path.resolve(process.cwd(), 'src/data/DataCart.json'); //fix para subir a railway
+const dataProductsFile = path.resolve(process.cwd(), 'DataProducts.json');//fix para subir a railway
+
+const dataCartFile = path.resolve(process.cwd(), 'DataCart.json'); //fix para subir a railway
+
+
 const migrateData = async () => {
   try {
     // Leer productos del JSON
