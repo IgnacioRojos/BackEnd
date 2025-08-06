@@ -5,6 +5,8 @@ const { engine } = require('express-handlebars');
 const path = require('path');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
+
 
 // Rutas
 const ProductRouter = require('../src/routes/ProductRoute');
@@ -33,6 +35,10 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, '../src/views'));
 
 // Middleware
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
