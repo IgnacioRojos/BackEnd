@@ -1,6 +1,8 @@
-const { Cart } = require('../models/cart.js'); // Modelo Cart
+const  Cart  = require('../models/cart.js'); // Modelo Cart
 
-const {Product } = require("../models/product.js") // Modelo Product
+const Product  = require("../models/product.js") // Modelo Product
+
+const mongoose = require('mongoose');
 
 class CartManager {
 
@@ -42,7 +44,33 @@ class CartManager {
     }
 
     // Agregar un producto a un carrito
-    async addProductToCart(req, res) {
+    async addProductToCart(cid, pid, quantity = 1) {
+        try {
+            if (!this.validateObjectId(cid) || !this.validateObjectId(pid)) {
+                return { error: 'ID de carrito o producto inválido' };
+            }
+
+            const cart = await Cart.findById(cid);
+            if (!cart) return { error: 'Carrito no encontrado' };
+
+            const product = await Product.findById(pid);
+            if (!product) return { error: 'Producto no encontrado' };
+
+            const productIndex = cart.products.findIndex(p => p.product.toString() === pid);
+            if (productIndex === -1) {
+                cart.products.push({ product: pid, quantity });
+            } else {
+                cart.products[productIndex].quantity += quantity;
+            }
+
+            await cart.save();
+            return cart;
+        } catch (error) {
+            console.error('Error en addProductToCart:', error);
+            return { error: 'Error interno al agregar producto' };
+        }
+    }
+    /*async addProductToCart(req, res) {
     
         try {
             // Validar los IDs
@@ -81,7 +109,7 @@ class CartManager {
             console.error('Error al agregar producto al carrito:', error);
             res.status(500).json({ error: 'Error al agregar producto al carrito', details: error.message });
         }
-    }
+    }*/
 
     // Eliminar un producto de un carrito
     async deleteProductFromCart(cartId, productId) {

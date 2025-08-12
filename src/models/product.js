@@ -8,10 +8,9 @@ const productSchema = new mongoose.Schema({
     stock: { type: Number, required: true }
 });
 
-productSchema.plugin(mongoosePaginate); // Agrega paginación
+// Plugin de paginación
+productSchema.plugin(mongoosePaginate);
 
-const Product = mongoose.model('Product', productSchema);
-module.exports = Product;
-
+module.exports = mongoose.model('Product', productSchema);
 
 

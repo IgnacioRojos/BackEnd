@@ -2,7 +2,7 @@ const ProductManager  = require('../managers/ProductManager.js');
 
 let productManager;
 
-const { Product } = require("../models/product.js")
+const { Product }  = require("../models/product.js")
 
 const {Cart} = require("../models/cart.js")
 
