@@ -19,18 +19,25 @@ const getAllCarts = async (req, res) => {
 
 
 
-const getCartById = async (req, res) => {
+const getCartById = async (req, res) => { 
   try {
-    const { cid } = req.params; // Obtener ID del carrito
-    const cart = await Cart.findById(cid).populate('products.product'); // Buscar el carrito con sus productos
+    const { cid } = req.params; 
+    const cart = await Cart.findById(cid).populate('products.product').lean(); 
 
     if (!cart) {
-        return res.status(404).json({ message: 'Carrito no encontrado' });
+      return res.status(404).json({ message: 'Carrito no encontrado' });
     }
 
-    // Renderizar la vista del carrito (por ejemplo, 'cart.handlebars')
-    res.render('cart', { cart });
+    // Detectar si es una request desde un navegador (HTML) o API (JSON)
+    if (req.accepts('html')) {
+      return res.render('cart', { cart }); // Vista handlebars
+    }
+
+    // Si viene de React/Axios, devolver JSON
+    res.json(cart);
+
   } catch (error) {
+    console.error("❌ Error en getCartById:", error);
     res.status(500).json({ message: 'Error al obtener el carrito', error: error.message });
   }
 };
