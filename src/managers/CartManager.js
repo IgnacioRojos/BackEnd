@@ -23,12 +23,16 @@ class CartManager {
     }
 
     // Obtener un carrito por ID
-    async getCartById(id) {
+    async getCartById(cid) {
         try {
-            const cart = await Cart.findById(id).populate('products.product').lean();
-            return cart || null;
+            const cart = await Cart.findById(cid)
+            .populate('products.product') // 'products.product' es el path del modelo Product
+            .lean(); // Convierte el resultado en un objeto JS simple
+
+            return cart;
         } catch (error) {
-            return { error: 'Error al obtener el carrito', details: error.message };
+            console.error("❌ Error en getCartById:", error);
+            throw error;
         }
     }
 

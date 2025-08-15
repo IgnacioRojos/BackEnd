@@ -49,17 +49,29 @@ const createCart = async (req, res) => {
 const getCartProducts = async (req, res) => {
   const { cid } = req.params;
   try {
-      const cart = await cartManager.getCartById(cid);
-      if (!cart) {
-          return res.status(404).send('Carrito no encontrado');
-      }
-      // Renderizamos la vista 'carts' y pasamos el carrito y sus productos
-      res.render('cart', { 
-          cart ,  // Esto pasa el carrito completo con el _id
-          products: cart.products // Pasamos los productos del carrito
+    const cart = await cartManager.getCartById(cid);
+    if (!cart) {
+      return res.status(404).send(
+        req.accepts('html') ? 'Carrito no encontrado' : { message: 'Carrito no encontrado' }
+      );
+    }
+
+    if (req.accepts('html')) {
+      return res.render('cart', { 
+        cart,  
+        products: cart.products 
       });
+    }
+
+    return res.json({ products: cart.products });
+
   } catch (error) {
+    console.error("❌ Error en getCartProducts:", error);
+    if (req.accepts('html')) {
+      res.status(500).send('Error al obtener productos del carrito');
+    } else {
       res.status(500).json({ message: 'Error al obtener productos del carrito', error });
+    }
   }
 };
 
