@@ -65,27 +65,32 @@ const getCartProducts = async (req, res) => {
   try {
     const cart = await cartManager.getCartById(cid);
     if (!cart) {
-      return res.status(404).send(
-        req.accepts('html') ? 'Carrito no encontrado' : { message: 'Carrito no encontrado' }
-      );
+      return res.status(404).json({ message: 'Carrito no encontrado' });
     }
 
-    if (req.accepts('html')) {
-      return res.render('cart', { 
-        cart,  
-        products: cart.products 
-      });
-    }
-
-    return res.json({ products: cart.products });
-
+    return res.json({ products: cart.products }); // <-- Solo JSON
   } catch (error) {
     console.error("❌ Error en getCartProducts:", error);
-    if (req.accepts('html')) {
-      res.status(500).send('Error al obtener productos del carrito');
-    } else {
-      res.status(500).json({ message: 'Error al obtener productos del carrito', error });
+    res.status(500).json({ message: 'Error al obtener productos del carrito', error });
+  }
+};
+
+// Vista con Handlebars (solo para testear backend)
+const renderCartView = async (req, res) => {
+  const { cid } = req.params;
+  try {
+    const cart = await cartManager.getCartById(cid);
+    if (!cart) {
+      return res.status(404).send("Carrito no encontrado");
     }
+
+    res.render("cart", {
+      cart,
+      products: cart.products
+    });
+  } catch (error) {
+    console.error("❌ Error en renderCartView:", error);
+    res.status(500).send("Error al renderizar carrito");
   }
 };
 
@@ -187,26 +192,6 @@ const clearCart = async (req, res) => {
   }
 };
 
-const renderCartView = async (req, res) => {
-  try {
-      const cartId = req.cookies.cartId;
-
-      if (!cartId) {
-          return res.status(400).send('No hay carrito asignado');
-      }
-
-      const cart = await Cart.findById(cartId).populate('products.product').lean();
-
-      if (!cart) {
-          return res.status(404).send('Carrito no encontrado');
-      }
-
-      res.render('carts', { cart, products: cart.products });
-  } catch (error) {
-      console.error('❌ Error al renderizar carrito:', error);
-      res.status(500).send('Error al cargar el carrito');
-  }
-};
 
 
 
