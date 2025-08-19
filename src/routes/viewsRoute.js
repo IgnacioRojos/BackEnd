@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ProductManager = require('../managers/ProductManager');
 const productManager = new ProductManager();
-const CartManager = require("../managers/CartManager"); // Importa el CartManager
+const CartManager = require("../managers/CartManager"); 
 const cartManager = new CartManager();
 
 // Ruta para mostrar los productos con paginación, ordenación y filtros
@@ -20,9 +20,9 @@ router.get('/products', async (req, res) => {
             }
         }
         
-        if (filter.$and.length === 0) delete filter.$and; // Si no hay filtros, eliminar `$and`
+        if (filter.$and.length === 0) delete filter.$and; 
 
-        // ⚠️ Aquí se usa `.lean()` para devolver objetos JSON puros
+
         const result = await productManager.getAllProducts({
             limit: parseInt(limit),
             page: parseInt(page),
@@ -40,7 +40,7 @@ router.get('/products', async (req, res) => {
             page: result.page,
             prevPage: result.hasPrevPage ? `/products?page=${result.prevPage}` : null,
             nextPage: result.hasNextPage ? `/products?page=${result.nextPage}` : null,
-            cartId  // Pasar el cartId al template de Handlebars
+            cartId  
         });
 
     } catch (error) {

@@ -117,25 +117,6 @@ const addProductToCart = async (req, res) => {
     res.status(500).json({ message: 'Hubo un error al agregar el producto al carrito' });
   }
 };
-/*const addProductToCart = async (req, res) => {
-  const { cid, pid } = req.params;  // Extraemos los IDs del carrito y del producto
-  const { quantity } = req.body;  // Extraemos la cantidad del cuerpo de la solicitud
-
-  if (!cid || !pid) {
-    return res.status(400).json({ error: 'ID de carrito o producto no proporcionado' });
-  }
-
-  try {
-      const updatedCart = await cartManager.addProductToCart(cid, pid, quantity);
-      if (updatedCart.error) {
-          return res.status(400).json({ message: updatedCart.error });
-      }
-      res.status(200).json({ message: 'Producto agregado al carrito', cart: updatedCart });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Hubo un error al agregar el producto al carrito' });
-  }
-};*/
 
 
 const updateCart = async (req, res) => {
@@ -157,11 +138,10 @@ const deleteProductFromCart = async (req, res) => {
     console.log('Resultado deleteProductFromCart:', result);
 
     if (result.error) {
-      // Esto solo ocurre si hay error real
+
       return res.status(400).json({ success: false, message: result.error });
     }
 
-    // Si todo bien, responde ok y carrito actualizado
     res.json({ success: true, cart: result });
   } catch (error) {
     console.error('Error en deleteProductFromCart:', error);

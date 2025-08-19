@@ -23,7 +23,7 @@
     <!-- Script para eliminar producto del carrito -->
     <script>
         function removeFromCart(cartId, productId) {
-            // Realizar la solicitud DELETE para eliminar el producto utilizando ObjectId
+         
             console.log('Eliminando producto:', productId, 'del carrito:', cartId);
             fetch(`/api/carts/${cartId}/products/${productId}`, {
                 method: 'DELETE'

@@ -1,4 +1,4 @@
-const Product = require('../models/product'); // Importamos el modelo de Mongoose
+const Product = require('../models/product'); 
 const mongoose = require('mongoose');
 
 class ProductManager {
@@ -20,7 +20,7 @@ class ProductManager {
             };
     
             const result = await Product.paginate(filter, options);
-            return result; // Devolver directamente el resultado
+            return result; 
         } catch (error) {
             console.error("❌ Error al obtener productos:", error);
             return {

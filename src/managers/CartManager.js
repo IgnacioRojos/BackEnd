@@ -1,13 +1,11 @@
-const  Cart  = require('../models/cart.js'); // Modelo Cart
-
-const Product  = require("../models/product.js") // Modelo Product
-
+const  Cart  = require('../models/cart.js');
+const Product  = require("../models/product.js") 
 const mongoose = require('mongoose');
 
 class CartManager {
 
 
-        // Validar ObjectId de MongoDB antes de proceder
+      
     validateObjectId(id) {
         return mongoose.Types.ObjectId.isValid(id);
     }
@@ -26,9 +24,8 @@ class CartManager {
     async getCartById(cid) {
         try {
             const cart = await Cart.findById(cid)
-            .populate('products.product') // 'products.product' es el path del modelo Product
-            .lean(); // Convierte el resultado en un objeto JS simple
-
+            .populate('products.product') 
+            .lean(); 
             return cart;
         } catch (error) {
             console.error("❌ Error en getCartById:", error);
@@ -74,46 +71,7 @@ class CartManager {
             return { error: 'Error interno al agregar producto' };
         }
     }
-    /*async addProductToCart(req, res) {
-    
-        try {
-            // Validar los IDs
-            if (!this.validateObjectId(cid) || !this.validateObjectId(pid)) {
-                console.error('ID de carrito o producto inválido');
-                return res.status(400).json({ error: 'ID de carrito o producto inválido' });
-            }
-    
-            // Buscar el carrito
-            const cart = await Cart.findById(cid);
-            if (!cart) {
-                console.error(`Carrito con ID ${cid} no encontrado`);
-                return res.status(404).json({ error: `Carrito con ID ${cid} no encontrado` });
-            }
-    
-            // Buscar el producto
-            const product = await Product.findById(pid);
-            if (!product) {
-                console.error(`Producto con ID ${pid} no encontrado`);
-                return res.status(404).json({ error: `Producto con ID ${pid} no encontrado` });
-            }
-    
-            // Verificar si el producto ya está en el carrito
-            const productIndex = cart.products.findIndex(p => p.product.toString() === pid);
-            if (productIndex === -1) {
-                cart.products.push({ product: pid, quantity });
-                console.log(`Producto ${pid} agregado al carrito`);
-            } else {
-                cart.products[productIndex].quantity += quantity; // Incrementar cantidad si ya existe
-                console.log(`Cantidad del producto ${pid} actualizada`);
-            }
-    
-            await cart.save(); // Guardar el carrito actualizado
-            return res.json(cart); // Devolver el carrito actualizado
-        } catch (error) {
-            console.error('Error al agregar producto al carrito:', error);
-            res.status(500).json({ error: 'Error al agregar producto al carrito', details: error.message });
-        }
-    }*/
+
 
     // Eliminar un producto de un carrito
     async deleteProductFromCart(cartId, productId) {
@@ -152,7 +110,7 @@ class CartManager {
                 return { error: `Carrito con ID ${cartId} no encontrado` };
             }
 
-            // Reemplazar productos en el carrito
+
             cart.products = products;
             await cart.save();
             return cart;

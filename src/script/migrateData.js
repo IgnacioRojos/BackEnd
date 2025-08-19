@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Product = require('../models/product');
 const Cart = require('../models/cart');
 
-// ✅ Rutas corregidas para Railway (archivos en raíz)
+
 const dataProductsFile = path.resolve(process.cwd(), 'DataProducts.json');
 const dataCartFile = path.resolve(process.cwd(), 'DataCart.json');
 
