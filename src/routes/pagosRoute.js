@@ -27,7 +27,7 @@ router.post("/create_preference", async (req, res) => {
       },
     });
 
-    res.json({ id: result.id });
+    res.json({ id: result.body.id });
 
   } catch (error) {
     console.error("Error al crear preferencia:", error);
