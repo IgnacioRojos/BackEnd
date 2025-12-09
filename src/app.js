@@ -11,6 +11,7 @@ const cors = require('cors');
 const ProductRouter = require('../src/routes/ProductRoute');
 const CartRouter = require('../src/routes/CartRoute');
 const viewsRouter = require('../src/routes/viewsRoute');
+const pagosRoute = require ("../src/routes/pagosRoute")
 
 // Modelos
 const Product = require('../src/models/product');
@@ -52,7 +53,7 @@ app.use(cookieParser());
 app.use('/api/products', ProductRouter);
 app.use('/api/carts', CartRouter);
 app.use('/', viewsRouter);
-
+app.use("/api/pagos", pagosRoute)
 // Ruta principal
 app.get('/', async (req, res) => {
   try {
