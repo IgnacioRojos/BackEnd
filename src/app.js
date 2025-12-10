@@ -79,6 +79,8 @@ app.get('/', async (req, res) => {
   }
 });
 
+
+
 // Conexión a MongoDB y migración de datos
 mongoose.connect(DB_URI)
   .then(async () => {
