@@ -1,16 +1,17 @@
 const express = require("express");
 const mercadopago = require("../script/mercadoPago");
+const orderController = require("../controllers/OrderController")
 
 const router = express.Router();
 
 router.post("/create_preference", async (req, res) => {
-  console.log("📌 /create_preference - Body:", req.body);
+  console.log("/create_preference - Body:", req.body);
 
   try {
     const { items } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
-      console.error("❌ Error: items inválidos o vacíos");
+      console.error(" Error: items inválidos o vacíos");
       return res.status(400).json({ error: "items inválidos o vacíos" });
     }
 
@@ -18,7 +19,7 @@ router.post("/create_preference", async (req, res) => {
     const isProd = process.env.NODE_ENV === "production";
 
     const FRONT_URL = isProd
-      ? "https://eccomercefullstack.netlify.app/" // reemplazar por tu dominio real Netlify
+      ? "https://eccomercefullstack.netlify.app"   
       : "http://localhost:3000";
 
     const preference = {
@@ -51,6 +52,7 @@ router.post("/create_preference", async (req, res) => {
         failure: `${FRONT_URL}/failure`,
         pending: `${FRONT_URL}/pending`,
       },
+
       auto_return: "approved",
     };
 
@@ -72,6 +74,9 @@ router.post("/create_preference", async (req, res) => {
     });
   }
 });
+
+
+router.post("/webhook", orderController.mercadoPagoWebhook);
 
 module.exports = router;
 
