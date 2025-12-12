@@ -25,7 +25,7 @@ const migrateData = async () => {
 
       if (!existingProduct) {
         newProduct = await Product.create(productData);
-        console.log(`✅ Producto "${productData.title}" migrado a MongoDB.`);
+        console.log(`Producto "${productData.title}" migrado a MongoDB.`);
       } else {
         newProduct = existingProduct;
         console.log(`Producto "${productData.title}" ya existe. Omitido.`);
@@ -35,7 +35,7 @@ const migrateData = async () => {
       idMap[id] = newProduct._id.toString();
     }
 
-    console.log('✅ Productos migrados a MongoDB');
+    console.log('Productos migrados a MongoDB');
 
     // Leer carritos
     const cartsData = JSON.parse(fs.readFileSync(dataCartFile, 'utf-8'));
@@ -60,10 +60,10 @@ const migrateData = async () => {
       await Cart.create({ products: cartProducts });
     }
 
-    console.log('✅ Carritos migrados a MongoDB');
-    console.log('✅ Migración completada');
+    console.log('Carritos migrados a MongoDB');
+    console.log('Migración completada');
   } catch (err) {
-    console.error('❌ Error al migrar los datos:', err);
+    console.error('Error al migrar los datos:', err);
   }
 };
 

@@ -32,7 +32,7 @@ ProductController.setSocketIo(io);
 
 app.use(cookieParser());
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 const DB_URI = "mongodb+srv://nachorojos99:ignacio2208@cluster0.wr7tz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Configuración de Handlebars
@@ -74,7 +74,7 @@ app.get('/', async (req, res) => {
 
     res.render('home', { products, cart });
   } catch (error) {
-    console.error('❌ Error en la ruta principal:', error);
+    console.error('Error en la ruta principal:', error);
     res.status(500).send('Error en la ruta principal');
   }
 });
@@ -84,34 +84,34 @@ app.get('/', async (req, res) => {
 // Conexión a MongoDB y migración de datos
 mongoose.connect(DB_URI)
   .then(async () => {
-    console.log('✅ Conectado a MongoDB');
+    console.log('Conectado a MongoDB');
 
     if (process.env.MIGRATE === 'true') {
-      console.log('📦 Ejecutando migración de datos...');
+      console.log('Ejecutando migración de datos...');
       await migrateData();
     } else {
-      console.log('📦 Migración omitida por configuración');
+      console.log('Migración omitida por configuración');
     }
 
     iniciarServidor();
   })
   .catch(err => {
-    console.error('❌ Error al conectar con MongoDB:', err);
+    console.error('Error al conectar con MongoDB:', err);
     process.exit(1);
   });
 
 const iniciarServidor = () => {
   server.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en el puerto http://localhost:${PORT}/`);
+    console.log(`Servidor corriendo en el puerto http://localhost:${PORT}/`);
   });
 };
 
 // Socket.IO: sólo conexión y desconexión (la lógica la maneja el controlador)
 io.on('connection', (socket) => {
-  console.log(`⚡ Cliente conectado. Total: ${io.engine.clientsCount}`);
+  console.log(`Cliente conectado. Total: ${io.engine.clientsCount}`);
 
   socket.on('disconnect', () => {
-    console.log(`⚠️ Cliente desconectado. Total: ${io.engine.clientsCount}`);
+    console.log(`Cliente desconectado. Total: ${io.engine.clientsCount}`);
   });
 });
 

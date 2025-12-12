@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const CartController = require('../controllers/CartController');
 
+// Vista para ver el carrito (GET)
+router.get('/view/:cid', CartController.renderCartView);
+
 // Crear un carrito
 router.post('/create', CartController.createCart);
 
@@ -14,8 +17,6 @@ router.put('/:cid/product/:pid', CartController.addProductToCart);
 // Eliminar un producto del carrito (DELETE)
 router.delete('/:cid/products/:pid', CartController.deleteProductFromCart);
 
-// Vista para ver el carrito (GET)
-router.get('/view/:cid', CartController.renderCartView);
 
 
 module.exports = router;
