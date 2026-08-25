@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -33,7 +37,12 @@ ProductController.setSocketIo(io);
 app.use(cookieParser());
 
 const PORT = process.env.PORT || 4000;
-const DB_URI = "mongodb+srv://nachorojos99:ignacio2208@cluster0.wr7tz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const DB_URI = process.env.MONGO_URI;
+
+if (!DB_URI) {
+  console.error("Falta la variable de entorno MONGO_URI");
+  process.exit(1);
+}
 
 // Configuración de Handlebars
 app.engine('handlebars', engine({ defaultLayout: false }));
