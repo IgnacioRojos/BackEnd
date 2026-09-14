@@ -24,7 +24,7 @@ router.post("/create_preference", async (req, res) => {
 
     const preference = {
       items: items.map((item, index) => {
-        console.log(`📦 Item[${index}]`, item);
+        console.log(`Item[${index}]`, item);
 
         const price = Number(item.price);
         const quantity = Number(item.quantity);
@@ -68,10 +68,7 @@ router.post("/create_preference", async (req, res) => {
     });
   } catch (error) {
     console.error("ERROR en create_preference:", error);
-    res.status(500).json({
-      error: error.message,
-      stack: error.stack
-    });
+    res.status(500).json({ error: "No se pudo crear la preferencia de pago" });
   }
 });
 
@@ -82,68 +79,3 @@ module.exports = router;
 
 
 
-/*const express = require("express");
-const mercadopago = require("../script/mercadoPago");
-
-const router = express.Router();
-
-router.post("/create_preference", async (req, res) => {
-  try {
-    const { items } = req.body;
-
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: "Items inválidos o vacíos" });
-    }
-
-    // Detectar si estamos en producción o desarrollo
-    const isProd = process.env.NODE_ENV === "production";
-
-    const FRONT_URL = isProd
-      ? "https://eccomercefullstack.netlify.app/" 
-      : "http://localhost:3000";
-
-    // Construir el preference
-    const preference = {
-      items: items.map((item, index) => {
-        const price = Number(item.price);
-        const quantity = Number(item.quantity);
-
-        if (isNaN(price) || isNaN(quantity)) {
-          throw new Error(
-            `Producto en posición ${index} tiene precio o cantidad inválidos`
-          );
-        }
-
-        return {
-          title: item.title,
-          description: item.description || "",
-          quantity: quantity,
-          currency_id: "ARS",
-          unit_price: price,
-        };
-      }),
-
-      back_urls: {
-        success: `${FRONT_URL}/success`,
-        failure: `${FRONT_URL}/failure`,
-        pending: `${FRONT_URL}/pending`,
-      },
-
-      auto_return: "approved",
-    };
-
-    // Crear preferencia en MercadoPago
-    const response = await mercadopago.preferences.create(preference);
-
-    return res.json({
-      id: response.body.id,
-      init_point: response.body.init_point,
-    });
-
-  } catch (error) {
-    console.error("Error al crear preferencia:", error);
-    return res.status(500).json({ error: "Error al crear preferencia" });
-  }
-});
-
-module.exports = router;*/
