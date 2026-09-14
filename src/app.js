@@ -34,7 +34,7 @@ const io = new Server(server);
 // Pasar la instancia de io al controlador de productos
 ProductController.setSocketIo(io);
 
-app.use(cookieParser());
+
 
 const PORT = process.env.PORT || 4000;
 const DB_URI = process.env.MONGO_URI;
@@ -43,17 +43,15 @@ if (!DB_URI) {
   console.error("Falta la variable de entorno MONGO_URI");
   process.exit(1);
 }
-
+const FRONT_ORIGIN = process.env.FRONT_ORIGIN || "http://localhost:3000";
+app.use(cors({ origin: FRONT_ORIGIN, credentials: true }));
 // Configuración de Handlebars
 app.engine('handlebars', engine({ defaultLayout: false }));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, '../src/views'));
 
 // Middleware
-app.use(cors({
-  origin: '*',
-  credentials: true,
-}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
